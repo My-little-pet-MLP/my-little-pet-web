@@ -19,6 +19,7 @@ const config = {
     },
     extend: {
       colors: {
+        oragetheme: "#F7AB2A",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

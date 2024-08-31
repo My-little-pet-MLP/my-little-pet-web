@@ -27,7 +27,7 @@ export function SideBarDashboard() {
                         </Tooltip>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Link href="#" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
+                                <Link href="/dashboard/pedidos" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
                                     <ShoppingBag className="h-5 w-5" />
                                     <span className="sr-only">Pedidos</span>
                                 </Link>
@@ -38,7 +38,7 @@ export function SideBarDashboard() {
                         </Tooltip>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Link href="#" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
+                                <Link href="/dashboard/anuncios" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
                                     <Flame className="h-5 w-5" />
                                     <span className="sr-only">Anuncios</span>
                                 </Link>
@@ -107,11 +107,11 @@ export function SideBarDashboard() {
                                     <Home className="h-5 w-5 transition-all" />
                                     Dashboard
                                 </Link>
-                                <Link href="#" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
+                                <Link href="/dashboard/pedidos" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
                                     <ShoppingBag className="h-5 w-5 transition-all" />
                                     Pedidos
                                 </Link>
-                                <Link href="#" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
+                                <Link href="/dashboard/anuncios" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
                                     <Flame className="h-5 w-5 transition-all" />
                                     Anuncios
                                 </Link>
