@@ -10,7 +10,7 @@ export default function Dashboard() {
                 <CardDashboardVendas title="Vendas do mês" description="Parabens, voçê vendeu" content="65 vendas/mês"/>
                 <CardDashboardFaturamento title="Faturamento" description="faturamento do mês" content="R$ 9.000,00"/>
             </section>
-            <section className="container grid grid-cols-2 gap-4 mt-4">
+            <section className="container w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                <ChartMounths/>
                <PizzaPaymentFormChart/>
             </section>

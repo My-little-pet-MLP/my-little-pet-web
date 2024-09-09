@@ -9,12 +9,12 @@ export function CardDashboardVendas({title,description,content}:CardDashboardPro
     return(
         <Card className="flex pt-4 sm:pt-8 px-2 sm:px-4 flex-col gap-1">
                     <CardTitle className="flex flex-row items-center gap-4">
-                        <Package className="text-oragetheme"/>
-                        <span>{title}</span>
+                        <Package className="text-oragetheme hidden sm:flex"/>
+                        <span className="w-full text-center sm:text-start">{title}</span>
                     </CardTitle>
-                    <CardDescription>{description}</CardDescription>
+                    <CardDescription className="w-full text-center sm:text-start">{description}</CardDescription>
                     <CardContent className="flex items-center justify-center h-24">
-                        <span>{content}</span>
+                        <span className="text-sm text-center sm:text-start sm:text-base">{content}</span>
                     </CardContent>
                 </Card>
     )
@@ -23,12 +23,12 @@ export function CardDashboardFaturamento({title,description,content}:CardDashboa
     return(
         <Card className="flex pt-4 sm:pt-8 px-2 sm:px-4 flex-col gap-1">
                     <CardTitle className="flex flex-row items-center gap-4">
-                        <WalletCards className="text-oragetheme"/>
-                        <span>{title}</span>
+                        <WalletCards className="text-oragetheme hidden sm:flex"/>
+                        <span className="w-full text-center sm:text-start">{title}</span>
                     </CardTitle>
-                    <CardDescription>{description}</CardDescription>
+                    <CardDescription className="w-full text-center sm:text-start">{description}</CardDescription>
                     <CardContent className="flex items-center justify-center h-24">
-                        <span>{content}</span>
+                        <span  className="text-sm text-center sm:text-start sm:text-base">{content}</span>
                     </CardContent>
                 </Card>
     )
