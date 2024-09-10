@@ -15,7 +15,7 @@ export function ProductComponent(product:ProductProps){
         <Card key={product.id} className="h-min py-4">
         <CardContent className="flex flex-col items-center gap-4 lg:gap-6">
             <Image
-                src={product.image_url}
+                src={product.imageUrl}
                 alt={product.title}
                 width={144}
                 height={144}
