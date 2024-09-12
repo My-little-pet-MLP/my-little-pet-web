@@ -1,14 +1,12 @@
 "use client";
 import { ProductComponent } from "@/components/product-component";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { useState, useEffect } from "react";
-import { PlusIcon } from "@radix-ui/react-icons";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { SheetFormRegisterProduct } from "@/components/sheet-form-register-product";
-import { getStoreByUserId } from "@/lib/axios"; // Importando a função para buscar a loja
-import { listProductsByStoreId } from "@/lib/axios"; // Importando a função para listar produtos
+import { getStoreByUserId, listProductsByStoreId } from "@/lib/axios"; // Importando a função para listar produtos
+import LoadingPageProduct from "./loading";
+import { useUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export interface ProductProps {
     id: string;
@@ -18,21 +16,34 @@ export interface ProductProps {
     stock: number;
 }
 
-export default function Produtos() {
+export default function ProdutosPage() {
+    const { user } = useUser(); // Obtemos o usuário autenticado
     const [products, setProducts] = useState<ProductProps[]>([]);
+    const [storeId, setStoreId] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
     useEffect(() => {
+        if (!user) {
+            setError("Usuário não autenticado.");
+            setLoading(false);
+            redirect("/");
+        }
         const fetchProducts = async () => {
             try {
-                // Substitua "user_id" pelo ID do usuário real que você deseja consultar
-                const userId = "cm0wqok4q0000ztitbjyd1eq7"
+                const userId = user.id;
+                const storeData = await getStoreByUserId(userId);
+                const storeId = storeData.id;
+                if (!storeId) {
+                    setError("Não tem loja cadastrada")
+                    setLoading(false);
+                    console.log(storeId)
+                    redirect("/register-store")
+                }
+                setStoreId(storeId);
 
 
-                // Usando a função listProductsByStoreId para buscar os produtos
-                const productsData = await listProductsByStoreId(userId, 1, 8);
-                console.log(productsData);
+                const productsData = await listProductsByStoreId(storeId, 1, 8);
+
                 setProducts(productsData);
 
             } catch (error) {
@@ -45,7 +56,9 @@ export default function Produtos() {
 
         fetchProducts();
     }, []);
-
+    if (loading) {
+        return <LoadingPageProduct />;
+    }
     return (
         <main className="sm:ml-14 p-6 sm:p-12 flex flex-col gap-4">
             <section>
@@ -80,10 +93,10 @@ export default function Produtos() {
                     </Card>
                 ) : (
                     <Card className="p-6">
-                        <div className="grid grid-cols-2">
-                            <div>
-                                <CardTitle className="text-2xl">Listagem de produtos</CardTitle>
-                                <CardDescription>todos seus produtos</CardDescription>
+                        <div className="grid  grid-cols-2">
+                            <div className="col-span-1">
+                                <CardTitle className=" text-base sm:text-2xl">Listagem de produtos</CardTitle>
+                                <CardDescription className="text-xs sm:text-base">todos seus produtos</CardDescription>
                             </div>
                             <div className="col-span-1 flex justify-end">
                                 <SheetFormRegisterProduct />
@@ -99,7 +112,6 @@ export default function Produtos() {
                                     stock={product.stock}
                                     key={product.id}
                                 />
-
                             ))}
                         </div>
                     </Card>

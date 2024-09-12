@@ -2,7 +2,6 @@ import { SideBarDashboard } from "@/components/side-bar";
 import type { Metadata } from "next";
 
 
-
 export const metadata: Metadata = {
   title: "My little pet Dasboard",
   description: "conheça o app que cuida do seu pet",

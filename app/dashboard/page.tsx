@@ -16,27 +16,27 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkStore = async () => {
-      if (isLoaded && isSignedIn && user?.id) {
-        console.log("User ID:", user.id);
-        try {
-          const storeData = await getStoreByUserId(user.id);
-          console.log("Store Data:", storeData);
+      if (!isLoaded || !isSignedIn || !user?.id) {
+        setLoading(false); // Se o usuário não estiver autenticado ou carregado, interrompe
+        return;
+      }
 
-          // Verificar se o objeto storeData tem a propriedade store e se é um objeto não vazio
-          if (!storeData || !storeData.id || !storeData.title || !storeData.description) {
-            console.log("Loja não encontrada ou dados incompletos, redirecionando para /register-store");
-            router.push("/register-store");
-          } else {
-            setLoading(false); // Loja existe, não precisa redirecionar
-          }
-        } catch (error) {
-          console.error("Erro ao verificar a loja:", error);
-          setError("Erro ao verificar a loja.");
-          setLoading(false);
+      try {
+        const storeData = await getStoreByUserId(user.id);
+        console.log("Store Data:", storeData);
+
+        // Verificar se storeData possui os dados essenciais
+        if (!storeData?.id || !storeData?.title || !storeData?.description) {
+          console.log("Loja não encontrada ou dados incompletos, redirecionando para /register-store");
+     
+        } else {
+          setLoading(false); // Loja existe, parar o estado de carregamento
         }
-      } else {
-        console.log("Usuário não carregado ou não autenticado");
-        setLoading(false); // Se o usuário não estiver autenticado, não mostra carregando
+      } catch (error) {
+        console.error("Erro ao verificar a loja:", error);
+        setError("Erro ao verificar a loja.");
+        setLoading(false);
+        router.push("/register-store");
       }
     };
     checkStore();
@@ -54,6 +54,9 @@ export default function Dashboard() {
     return (
       <main className="sm:ml-14 pt-6">
         <p>{error}</p>
+        <button onClick={() => router.push("/")} className="mt-4 p-2 bg-green-500 text-white rounded">
+          Voltar à página inicial
+        </button>
       </main>
     );
   }
