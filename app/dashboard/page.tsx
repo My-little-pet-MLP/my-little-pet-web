@@ -16,8 +16,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkStore = async () => {
+      // Verifica se o usuário está autenticado e carregado
       if (!isLoaded || !isSignedIn || !user?.id) {
-        setLoading(false); // Se o usuário não estiver autenticado ou carregado, interrompe
+        setLoading(false);
+        router.push("/sign-in"); // Redireciona para página de login se o usuário não estiver autenticado
         return;
       }
 
@@ -25,20 +27,21 @@ export default function Dashboard() {
         const storeData = await getStoreByUserId(user.id);
         console.log("Store Data:", storeData);
 
-        // Verificar se storeData possui os dados essenciais
+        // Verifica se os dados da loja são válidos
         if (!storeData?.id || !storeData?.title || !storeData?.description) {
           console.log("Loja não encontrada ou dados incompletos, redirecionando para /register-store");
-     
-        } else {
-          setLoading(false); // Loja existe, parar o estado de carregamento
+          router.push("/register-store"); // Redireciona para página de cadastro de loja
+          return;
         }
+
+        setLoading(false); // Loja encontrada, parar o estado de carregamento
       } catch (error) {
         console.error("Erro ao verificar a loja:", error);
         setError("Erro ao verificar a loja.");
         setLoading(false);
-        router.push("/register-store");
       }
     };
+
     checkStore();
   }, [isLoaded, isSignedIn, user, router]);
 

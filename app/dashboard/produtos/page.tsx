@@ -3,10 +3,10 @@ import { ProductComponent } from "@/components/product-component";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { SheetFormRegisterProduct } from "@/components/sheet-form-register-product";
-import { getStoreByUserId, listProductsByStoreId } from "@/lib/axios"; // Importando a função para listar produtos
+import { getStoreByUserId, listProductsByStoreId } from "@/lib/axios"; 
 import LoadingPageProduct from "./loading";
 import { useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation"; // Usar useRouter em vez de redirect diretamente
 
 export interface ProductProps {
     id: string;
@@ -17,33 +17,39 @@ export interface ProductProps {
 }
 
 export default function ProdutosPage() {
-    const { user } = useUser(); // Obtemos o usuário autenticado
+    const { user, isLoaded, isSignedIn } = useUser(); // Verificar estado de autenticação e carregamento
+    const router = useRouter();
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [storeId, setStoreId] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
-        if (!user) {
-            setError("Usuário não autenticado.");
-            setLoading(false);
-            redirect("/");
-        }
         const fetchProducts = async () => {
+            if (!isLoaded) return; // Aguarda até que o estado de carregamento do usuário esteja completo
+
+            if (!isSignedIn || !user) {
+                setError("Usuário não autenticado.");
+                setLoading(false);
+                router.push("/"); // Redireciona para a home se o usuário não estiver autenticado
+                return;
+            }
+
             try {
                 const userId = user.id;
                 const storeData = await getStoreByUserId(userId);
-                const storeId = storeData.id;
+                const storeId = storeData?.id;
+
                 if (!storeId) {
-                    setError("Não tem loja cadastrada")
+                    setError("Não tem loja cadastrada.");
                     setLoading(false);
-                    console.log(storeId)
-                    redirect("/register-store")
+                    router.push("/register-store"); // Redireciona para registro de loja
+                    return;
                 }
+
                 setStoreId(storeId);
 
-
                 const productsData = await listProductsByStoreId(storeId, 1, 8);
-
                 setProducts(productsData);
 
             } catch (error) {
@@ -55,10 +61,12 @@ export default function ProdutosPage() {
         };
 
         fetchProducts();
-    }, []);
+    }, [isLoaded, isSignedIn, user, router]);
+
     if (loading) {
         return <LoadingPageProduct />;
     }
+
     return (
         <main className="sm:ml-14 p-6 sm:p-12 flex flex-col gap-4">
             <section>
@@ -67,6 +75,7 @@ export default function ProdutosPage() {
                     <CardDescription className="text-base font-normal">Gerencie sua vitrine</CardDescription>
                 </Card>
             </section>
+
             <section className="w-full h-96">
                 {loading ? (
                     <Card className="p-6 h-80 flex items-center justify-center">
@@ -93,9 +102,9 @@ export default function ProdutosPage() {
                     </Card>
                 ) : (
                     <Card className="p-6">
-                        <div className="grid  grid-cols-2">
+                        <div className="grid grid-cols-2">
                             <div className="col-span-1">
-                                <CardTitle className=" text-base sm:text-2xl">Listagem de produtos</CardTitle>
+                                <CardTitle className="text-base sm:text-2xl">Listagem de produtos</CardTitle>
                                 <CardDescription className="text-xs sm:text-base">todos seus produtos</CardDescription>
                             </div>
                             <div className="col-span-1 flex justify-end">

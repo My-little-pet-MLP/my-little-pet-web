@@ -6,13 +6,9 @@ const isPublicRoute = createRouteMatcher(publicRoutes);
 
 export default clerkMiddleware((auth, request) => {
     const { userId } = auth();
-  
-    // Se o usuário estiver autenticado e tentar acessar uma rota pública, redirecione para o /dashboard
     if (userId && isPublicRoute(request)) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-  
-    // Caso contrário, retorne undefined para permitir que o próximo middleware ou rota seja executado
     return undefined;
 })
 
