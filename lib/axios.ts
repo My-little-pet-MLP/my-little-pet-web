@@ -46,7 +46,7 @@ export async function registerProduct(productData: {
     store_id: string;
 }) {
     try {
-        const response = await axiosInstance.post('/product', productData);
+        const response = await axiosInstance.post('/product/', productData);
         return response.data;
     } catch (error) {
         console.error('Erro ao registrar produto:', error);

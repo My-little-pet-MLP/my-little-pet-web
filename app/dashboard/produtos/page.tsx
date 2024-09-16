@@ -2,11 +2,12 @@
 import { ProductComponent } from "@/components/product-component";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import { SheetFormRegisterProduct } from "@/components/sheet-form-register-product";
-import { getStoreByUserId, listProductsByStoreId } from "@/lib/axios"; 
+import { getStoreByUserId, listProductsByStoreId } from "@/lib/axios";
 import LoadingPageProduct from "./loading";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation"; // Usar useRouter em vez de redirect diretamente
+
+import { DialogFormNewProduct } from "@/components/dialog-form-new-product";
 
 export interface ProductProps {
     id: string;
@@ -93,7 +94,7 @@ export default function ProdutosPage() {
                                 <CardDescription>todos seus produtos</CardDescription>
                             </div>
                             <div className="col-span-1 flex justify-end">
-                                <SheetFormRegisterProduct />
+
                             </div>
                         </div>
                         <CardContent className="w-full h-full flex items-center justify-center">
@@ -108,7 +109,7 @@ export default function ProdutosPage() {
                                 <CardDescription className="text-xs sm:text-base">todos seus produtos</CardDescription>
                             </div>
                             <div className="col-span-1 flex justify-end">
-                                <SheetFormRegisterProduct />
+                               <DialogFormNewProduct/>
                             </div>
                         </div>
                         <div className="w-full h-full p-6 grid grid-cols-1 sm:grid-cols-5 gap-4">
