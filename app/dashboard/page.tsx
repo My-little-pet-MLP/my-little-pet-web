@@ -1,51 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { getStoreByUserId } from "@/lib/axios";
 import { ChartMounths } from "../../components/chart-mounths";
 import { CardDashboardFaturamento, CardDashboardVendas } from "../../components/card-dashboard";
 import { PizzaPaymentFormChart } from "../../components/pizza-payment-form-chart";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkStore = async () => {
-      // Verifica se o usuário está autenticado e carregado
-      if (!isLoaded || !isSignedIn || !user?.id) {
-        setLoading(false);
-        router.push("/sign-in"); // Redireciona para página de login se o usuário não estiver autenticado
-        return;
-      }
+  const { data: storeData, isLoading, error } = useQuery({
+    queryKey: ["getStoreByUserId", user?.id], // Use user?.id em vez de user!.id
+    queryFn: () => getStoreByUserId(user!.id), // Garantido que user!.id é válido após a verificação
+    enabled: isLoaded && isSignedIn && user?.id != null, // Habilita a query se o usuário estiver logado e carregado
+  });
 
-      try {
-        const storeData = await getStoreByUserId(user.id);
-        console.log("Store Data:", storeData);
+  // Verificação e redirecionamento quando os dados da loja são obtidos
+  if (!isLoaded || !isSignedIn || !user) {
+    router.push("/sign-in");
+    return null; // Retorna null enquanto redireciona para evitar o carregamento de conteúdo desnecessário
+  }
 
-        // Verifica se os dados da loja são válidos
-        if (!storeData?.id || !storeData?.title || !storeData?.description) {
-          console.log("Loja não encontrada ou dados incompletos, redirecionando para /register-store");
-          router.push("/register-store"); // Redireciona para página de cadastro de loja
-          return;
-        }
-
-        setLoading(false); // Loja encontrada, parar o estado de carregamento
-      } catch (error) {
-        console.error("Erro ao verificar a loja:", error);
-        setError("Erro ao verificar a loja.");
-        setLoading(false);
-      }
-    };
-
-    checkStore();
-  }, [isLoaded, isSignedIn, user, router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="sm:ml-14 pt-6">
         <p>Carregando...</p>
@@ -56,12 +35,18 @@ export default function Dashboard() {
   if (error) {
     return (
       <main className="sm:ml-14 pt-6">
-        <p>{error}</p>
+        <p>Erro ao verificar a loja.</p>
         <button onClick={() => router.push("/")} className="mt-4 p-2 bg-green-500 text-white rounded">
           Voltar à página inicial
         </button>
       </main>
     );
+  }
+
+  // Se a loja não existir ou estiver com dados incompletos, redireciona para o cadastro de loja
+  if (!storeData?.id || !storeData?.title || !storeData?.description) {
+    router.push("/register-store");
+    return null;
   }
 
   return (
