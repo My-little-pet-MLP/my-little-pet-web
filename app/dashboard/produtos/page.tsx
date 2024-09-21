@@ -4,8 +4,6 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import LoadingPageProduct from "./loading";
 import { useAuth } from "@clerk/nextjs";
 import { DialogFormNewProduct } from "@/components/dialog-form-new-product";
-import { useQuery } from "@tanstack/react-query";
-import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id";
 import { useFetchProductByStoreId } from "@/lib/react-query/products-queries-and-mutations";
 import { useGetStoreByUserId } from "@/lib/react-query/store-queries-and-mutations";
 

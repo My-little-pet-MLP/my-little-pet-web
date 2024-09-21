@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { getStoreByUserId } from "@/lib/axios";
 import { ChartMounths } from "../../components/chart-mounths";
 import { CardDashboardFaturamento, CardDashboardVendas } from "../../components/card-dashboard";
 import { PizzaPaymentFormChart } from "../../components/pizza-payment-form-chart";
 import { useQuery } from "@tanstack/react-query";
+import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id";
 
 export default function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
