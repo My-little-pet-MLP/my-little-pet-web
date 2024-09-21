@@ -21,7 +21,7 @@ export default function ProdutosPage() {
     
     const { data: storeData, isLoading: isLoadingStore, error: errorStore } = useGetStoreByUserId(userId ?? "");
     const storeId = storeData?.id;
-    // Fetch the products of the store
+
     const { data: products, isLoading: isLoadingProducts, error: errorProducts } = useFetchProductByStoreId(storeId ?? "")
     console.log("ProductList: ",products)
 

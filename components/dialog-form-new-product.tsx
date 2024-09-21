@@ -31,7 +31,8 @@ export function DialogFormNewProduct() {
 
     async function RegisterProductFunction(data: RegisterProductType) {
         console.log("Dados recebidos do formulário:", data); // Verifica os dados do formulário
-        console.log(storeId.id)
+        
+        console.log(storeId?.id)
 
         if (!storeId?.id) {
             console.error("Store ID não disponível");
