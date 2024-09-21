@@ -22,7 +22,7 @@ export default function ProdutosPage() {
     const { data: storeId, isLoading: isLoadingStore, error: errorStore } = useGetStoreByUserId(userId ?? "");
 
     // Fetch the products of the store
-    const { data: products, isLoading: isLoadingProducts, error: errorProducts } = useFetchProductByStoreId(storeId)
+    const { data: products, isLoading: isLoadingProducts, error: errorProducts } = useFetchProductByStoreId(storeId.id)
     console.log("ProductList: ",products)
 
     if (isLoadingStore || isLoadingProducts) {
