@@ -12,7 +12,7 @@ import { RegisterProductSchema, RegisterProductType } from "@/lib/schemas";
 import { useState } from "react";
 import { useGetStoreByUserId } from "@/lib/react-query/store-queries-and-mutations";
 import { useListCategories } from "@/lib/react-query/categories-queries-and-mutation";
-
+import { uploadProductImage } from "@/lib/supabase";
 
 
 export function DialogFormNewProduct() {
@@ -28,30 +28,31 @@ export function DialogFormNewProduct() {
         resolver: zodResolver(RegisterProductSchema),
     });
 
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [uploadError, setUploadError] = useState<string | null>(null);
 
     async function RegisterProductFunction(data: RegisterProductType) {
         console.log("Dados recebidos do formulário:", data); // Verifica os dados do formulário
-        
-        console.log(storeId?.id)
 
         if (!storeId?.id) {
             console.error("Store ID não disponível");
-            return; 
+            return;
         }
 
-        console.log("Store ID:", storeId.id); // Verifica o Store ID
-        console.log("Preparando para registrar produto:", {
-            image_url: "https://jfwzshiyyvxklcuuzueu.supabase.co/storage/v1/object/public/my-little-pet-products/product1.png",
-            title: data.title,
-            description: data.description,
-            stock: data.stock,
-            price_in_cents: data.price_in_cents,
-            store_id: storeId.id, // Usar o Store ID correto
-            category_id: data.category_id,
-        });
+        let imageUrl = "";
+
+        if (selectedImage) {
+            const uploadResult = await uploadProductImage(selectedImage, "my-little-pet-products");
+            if (uploadResult.error) {
+                setUploadError(uploadResult.error.message);
+                return;
+            } else {
+                imageUrl = uploadResult.publicUrl || "";
+            }
+        }
 
         await createProduct({
-            image_url: "https://jfwzshiyyvxklcuuzueu.supabase.co/storage/v1/object/public/my-little-pet-products/product1.png",
+            image_url: imageUrl,
             title: data.title,
             description: data.description,
             stock: data.stock,
@@ -59,11 +60,33 @@ export function DialogFormNewProduct() {
             store_id: storeId.id,
             category_id: data.category_id,
         });
+
         if (isSuccess) {
             setIsOpen(false);
         }
     }
 
+    function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+            setUploadError(null); // Limpa erros anteriores
+        }
+    }
+
+    const formatCurrency = (value: any) => {
+        // Remove tudo que não é número
+        let num = value.replace(/[^\d]/g, '');
+        // Converte para float e formata para reais
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(num / 100);
+    };
+
+    const handlePriceInput = (event: any) => {
+        event.target.value = formatCurrency(event.target.value);
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -98,10 +121,10 @@ export function DialogFormNewProduct() {
                         <div className="gap-2 flex flex-col">
                             <Label>Preço R$</Label>
                             <Input
-                                type="number"
-                                {...register("price_in_cents", { valueAsNumber: true })}
-                                className="text-right"
-
+                                type="text"
+                                {...register("price_in_cents")}
+                                onInput={handlePriceInput}
+                                className="text-right no-spinners"
                                 disabled={isPending}
                             />
                             {errors.price_in_cents && <span className="font-normal text-sm text-red-500">{errors.price_in_cents.message}</span>}
@@ -111,21 +134,21 @@ export function DialogFormNewProduct() {
                             <Input
                                 type="number"
                                 {...register("stock", { valueAsNumber: true })}
-                                className="text-right"
+                                className="text-right no-spinners"
                                 disabled={isPending}
                             />
                             {errors.stock && <span className="font-normal text-sm text-red-500">{errors.stock.message}</span>}
                         </div>
-                        <div>
+                        <div className="gap-2 flex flex-col">
+                            <Label>Categoria</Label>
                             <Select
                                 onValueChange={(value) => {
-                                    console.log("Categoria selecionada:", value); // Verifica a categoria selecionada
                                     setValue("category_id", value);
                                 }}
                                 disabled={isPending || isLoadingCategories}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="selecione uma categoria" />
+                                    <SelectValue placeholder="Selecione uma categoria" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -144,6 +167,16 @@ export function DialogFormNewProduct() {
                             </Select>
                             {errors.category_id && <span className="font-normal text-sm text-red-500">{errors.category_id.message}</span>}
                         </div>
+                        <div className="gap-2 flex flex-col">
+                            <Label>Imagem do Produto</Label>
+                            <Input
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg, image/svg"
+                                onChange={handleFileChange}
+                                disabled={isPending}
+                            />
+                            {uploadError && <span className="font-normal text-sm text-red-500">{uploadError}</span>}
+                        </div>
                         <Button
                             type="submit"
                             disabled={isPending}
@@ -154,7 +187,7 @@ export function DialogFormNewProduct() {
                 </form>
             </DialogContent>
             <DialogClose className="sr-only">
-                dasa
+                Fechar
             </DialogClose>
         </Dialog>
     );
