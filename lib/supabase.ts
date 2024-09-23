@@ -10,7 +10,7 @@ interface uploadResponse {
 }
 
 // Lista de extensões de imagem permitidas
-const validImageExtensions = ['.png', '.jpg', '.jpeg','.svg'];
+const validImageExtensions = ['.png', '.jpg', '.jpeg', '.svg'];
 
 // Função para verificar a extensão do arquivo
 function isImageFile(fileName: string): boolean {
@@ -50,7 +50,7 @@ export async function uploadBanner(file: File, folder: string): Promise<uploadRe
     try {
         await checkImageDimensions(file, 913, 344);
     } catch (error) {
-        if (error instanceof Error){
+        if (error instanceof Error) {
             return { publicUrl: null, error };
         }
     }
@@ -65,12 +65,30 @@ export async function uploadProductImage(file: File, folder: string): Promise<up
     }
 
     try {
-        await checkImageDimensions(file, 200, 200);
+        await checkImageDimensions(file, 400, 400);
     } catch (error) {
-        if(error instanceof Error){
+        if (error instanceof Error) {
             return { publicUrl: null, error };
         }
-       
+
+    }
+
+    const fileName = `${Date.now()}_${file.name}`;
+    return uploadToSupabase(file, folder, fileName);
+}
+
+export async function uploadLogoImage(file: File, folder: string): Promise<uploadResponse> {
+    if (!isImageFile(file.name)) {
+        return { publicUrl: null, error: new Error("O arquivo deve ser uma imagem válida.") };
+    }
+
+    try {
+        await checkImageDimensions(file, 400, 400);
+    } catch (error) {
+        if (error instanceof Error) {
+            return { publicUrl: null, error };
+        }
+
     }
 
     const fileName = `${Date.now()}_${file.name}`;

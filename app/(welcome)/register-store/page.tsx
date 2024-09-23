@@ -14,16 +14,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardTitle } from "@/components/ui/card";
-import { RegisterStoreSchema, storeSchema } from "@/lib/schemas";
+import { RegisterStoreSchema, storeRegisterSchema } from "@/lib/schemas";
 import { useRegisterStore } from "@/lib/react-query/store-queries-and-mutations";
 import { useAuth } from "@clerk/nextjs";
 
 export default function RegisterStorePage() {
   const { userId } = useAuth();
 
-  const { mutate: RegisterStore ,isPending:isLoading} = useRegisterStore();
+  const { mutate: RegisterStore, isPending: isLoading } = useRegisterStore();
   const form = useForm<RegisterStoreSchema>({
-    resolver: zodResolver(storeSchema),
+    resolver: zodResolver(storeRegisterSchema),
     defaultValues: {
       title: "",
       description: "",

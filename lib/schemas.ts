@@ -1,10 +1,22 @@
 import exp from "constants";
-import { z } from "zod";
+import { title } from "process";
+import { TypeOf, z } from "zod";
+const parsePriceToCents = (price: string) => {
+    // Remove todos os caracteres não-numéricos, exceto vírgula, depois troca vírgula por ponto e multiplica por 100
+    const numericPrice = Number(price.replace(/[^\d,]/g, '').replace(',', '.')) * 100;
+    return numericPrice;
+};
 
 export const RegisterProductSchema = z.object({
     title: z.string().min(1, "Campo Obrigatório!"),
     description: z.string().min(1, "Campo Obrigatório!"),
-    price_in_cents: z.coerce.number().min(0, "O valor deve ser positivo!"),
+    price_in_cents: z.string().transform((price) => {
+        const cents = parsePriceToCents(price);
+        if (isNaN(cents) || cents < 0) {
+            throw new Error("O valor deve ser positivo!");
+        }
+        return cents;
+    }),
     stock: z.coerce.number().min(0, "Estoque não pode ser negativo!"),
     category_id: z.string(),
 });
@@ -13,10 +25,19 @@ export const RegisterProductSchema = z.object({
 export type RegisterProductType = z.infer<typeof RegisterProductSchema>;
 
 
-export const storeSchema = z.object({
+export const storeRegisterSchema = z.object({
     title: z.string().min(1, "Título é obrigatório"),
     description: z.string().min(1, "Descrição é obrigatória"),
-    cnpj: z.string().length(14, "CNPJ deve ter 14 caracteres"), // Mantém a validação para 14 caracteres
+    cnpj: z.string().length(14, "CNPJ deve ter 14 caracteres"),
 });
 
-export type RegisterStoreSchema = z.infer<typeof storeSchema>
+export type RegisterStoreSchema = z.infer<typeof storeRegisterSchema>
+
+
+export const storeUpdateSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+    cnpj: z.string().length(14, "CNPJ deve ter 14 caracteres"),
+})
+
+export type UpdateStoreSchemaType = z.infer<typeof storeUpdateSchema>

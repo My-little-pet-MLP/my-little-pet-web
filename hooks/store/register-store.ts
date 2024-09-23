@@ -8,7 +8,7 @@ export async function RegisterStore(data: { title: string, description: string, 
           description: data.description,
           cnpj: data.cnpj,
           user_id: data.user_id,
-          image_url: "https://img.freepik.com/vetores-premium/design-de-logotipo-de-cachorrinho-fofo-de-pet-shop_680355-30.jpg"
+          image_url: data.image_url
         });
       return JSON.parse(JSON.stringify(response));
     }
