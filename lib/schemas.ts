@@ -2,24 +2,33 @@ import exp from "constants";
 import { title } from "process";
 import { TypeOf, z } from "zod";
 const parsePriceToCents = (price: string) => {
-    // Remove todos os caracteres não-numéricos, exceto vírgula, depois troca vírgula por ponto e multiplica por 100
-    const numericPrice = Number(price.replace(/[^\d,]/g, '').replace(',', '.')) * 100;
-    return numericPrice;
+    // Remove todos os caracteres não numéricos, exceto vírgula, e depois troca vírgula por ponto
+    const numericPrice = price.replace(/[^\d,]/g, '').replace(',', '.');
+    
+    // Converte para número e multiplica por 100, depois arredonda para garantir a precisão
+    const cents = Math.round(Number(numericPrice) * 100);
+    
+    // Verifica se a conversão é válida e retorna o valor em centavos
+    if (isNaN(cents)) {
+        throw new Error("Preço inválido");
+    }
+    
+    return cents;
 };
-
 export const RegisterProductSchema = z.object({
     title: z.string().min(1, "Campo Obrigatório!"),
     description: z.string().min(1, "Campo Obrigatório!"),
     price_in_cents: z.string().transform((price) => {
-        const cents = parsePriceToCents(price);
-        if (isNaN(cents) || cents < 0) {
-            throw new Error("O valor deve ser positivo!");
+        const cents = parsePriceToCents(price); // Função que converte o preço para centavos
+        if (!Number.isInteger(cents) || cents < 0) {
+            throw new Error("O valor deve ser um número inteiro positivo!");
         }
         return cents;
     }),
     stock: z.coerce.number().min(0, "Estoque não pode ser negativo!"),
     category_id: z.string(),
 });
+
 
 
 export type RegisterProductType = z.infer<typeof RegisterProductSchema>;
