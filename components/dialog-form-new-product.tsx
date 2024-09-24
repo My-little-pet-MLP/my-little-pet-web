@@ -24,7 +24,7 @@ export function DialogFormNewProduct() {
 
     const { data: categories, isLoading: isLoadingCategories } = useListCategories();
 
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm<RegisterProductType>({
+    const { register, handleSubmit, formState: { errors }, setValue,reset  } = useForm<RegisterProductType>({
         resolver: zodResolver(RegisterProductSchema),
     });
 
@@ -62,6 +62,8 @@ export function DialogFormNewProduct() {
         });
 
         if (isSuccess) {
+            reset();
+            setSelectedImage(null);
             setIsOpen(false);
         }
     }
