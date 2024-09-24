@@ -17,7 +17,11 @@ function isImageFile(fileName: string): boolean {
     const extension = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
     return validImageExtensions.includes(extension);
 }
-
+function sanitizeFileName(fileName: string): string {
+    return fileName
+        .toLowerCase() // Converte para minúsculas
+        .replace(/[^\w.]+/g, '_'); // Substitui caracteres especiais por underscores
+}
 // Função auxiliar para verificar as dimensões da imagem
 function checkImageDimensions(file: File, expectedWidth: number, expectedHeight: number): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -96,9 +100,11 @@ export async function uploadLogoImage(file: File, folder: string): Promise<uploa
 }
 
 async function uploadToSupabase(file: File, folder: string, fileName: string): Promise<uploadResponse> {
+    const sanitizedFileName = sanitizeFileName(fileName);
+
     const { data, error } = await supabase.storage
         .from(folder)
-        .upload(`${folder}/${fileName}`, file, {
+        .upload(`${folder}/${sanitizedFileName}`, file, {
             cacheControl: '3600',
             upsert: false
         });
@@ -110,7 +116,7 @@ async function uploadToSupabase(file: File, folder: string, fileName: string): P
 
     const responseUrl = supabase.storage
         .from(folder)
-        .getPublicUrl(`${folder}/${fileName}`);
+        .getPublicUrl(`${folder}/${sanitizedFileName}`);
 
     if (!responseUrl.data.publicUrl) {
         console.error('Erro ao obter URL pública:');
