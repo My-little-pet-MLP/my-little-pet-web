@@ -1,12 +1,9 @@
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // Importar useRouter
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
-import { ProductProps } from "@/app/dashboard/produtos/page";
+import { ProductProps } from "@/app/dashboard/produtos/[pageNumber]/page";
 
 export function ProductComponent(product: ProductProps) {
-  const router = useRouter(); // Usar o hook useRouter
-
   // Função para formatar o valor de centavos para reais
   const formatPrice = (priceInCents: number) => {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(priceInCents / 100);
@@ -14,12 +11,17 @@ export function ProductComponent(product: ProductProps) {
 
   // Função de navegação para a página de edição
   function onNavigationProductPage() {
-    router.push(`/dashboard/produtos/${product.id}`); // Redirecionar para a página de edição com o ID do produto
+    // Lógica de navegação aqui
   }
 
+  // Função para limitar o tamanho do texto
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  };
+
   return (
-    <Card key={product.id} className="h-min py-4">
-      <CardContent className="flex flex-col items-center gap-4 lg:gap-6">
+    <Card key={product.id} className="h-80 w-full max-w-xs flex flex-col justify-between shadow-md">
+      <CardContent className="flex flex-col items-center gap-2 lg:gap-4 p-4">
         <Image
           src={product.imageUrl}
           alt={product.title}
@@ -28,12 +30,14 @@ export function ProductComponent(product: ProductProps) {
           className="object-contain w-36 h-36"
           priority
         />
-        <CardTitle className="w-full text-center text-sm sm:text-base">{product.title}</CardTitle>
-        <div className="grid grid-cols-1 w-full">
-          <CardDescription className="col-span-1 text-right text-xs">{formatPrice(product.priceInCents)}</CardDescription>
-          <CardDescription className="col-span-1 text-right text-xs sm:text-sm">Estoque: {product.stock}</CardDescription>
+        <CardTitle className="w-full text-center text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">
+          {truncateText(product.title, 25)} {/* Limitar o título a 25 caracteres */}
+        </CardTitle>
+        <div className="grid grid-cols-1 w-full text-center">
+          <CardDescription className="text-sm font-semibold">{formatPrice(product.priceInCents)}</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Estoque: {product.stock}</CardDescription>
         </div>
-        <div className="w-full">
+        <div className="w-full mt-auto">
           <Button className="w-full text-xs" onClick={onNavigationProductPage}>
             Editar
           </Button>
