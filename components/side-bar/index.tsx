@@ -58,7 +58,7 @@ export function SideBarDashboard() {
                             </Tooltip>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Link href="/dashboard/produtos" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
+                                    <Link href="/dashboard/produtos/1" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
                                         <Package className="h-5 w-5" />
                                         <span className="sr-only">Produtos</span>
                                     </Link>
@@ -122,7 +122,7 @@ export function SideBarDashboard() {
                                         <Flame className="h-5 w-5 transition-all" />
                                         Anuncios
                                     </Link>
-                                    <Link href="/dashboard/produtos" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
+                                    <Link href="/dashboard/produtos/1" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
                                         <Package className="h-5 w-5 transition-all" />
                                         Produtos
                                     </Link>
