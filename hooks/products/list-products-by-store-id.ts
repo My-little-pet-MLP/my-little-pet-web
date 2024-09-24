@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 
-export async function listProductsByStoreId(store_id: string, page: number = 1, size: number = 8) {
+export async function listProductsByStoreId(store_id: string, page: number, size: number = 8) {
     try {
       if (!store_id) {
         throw new Error('ID da loja é obrigatório para listar os produtos.');

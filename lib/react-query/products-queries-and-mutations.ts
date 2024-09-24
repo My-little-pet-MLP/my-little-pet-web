@@ -3,7 +3,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERYKEYS } from "./query-is";
 import { listProductsByStoreId } from "@/hooks/products/list-products-by-store-id";
 
-
+export interface ProductProps {
+    id: string;
+    title: string;
+    imageUrl: string;
+    priceInCents: number;
+    stock: number;
+  }
+export interface ProductsData {
+    products: ProductProps[];
+    totalPages: number;
+    currentPage: number;
+  }
 export const usePostProduct = () => {
     const queryClient = useQueryClient();
 
@@ -35,11 +46,10 @@ export const usePostProduct = () => {
     });
 }
 
-export const useFetchProductByStoreId = (storeId: string ) => {
-    return useQuery({
-        queryKey:[QUERYKEYS.listProductsByStoreId] ,
-        queryFn: () => listProductsByStoreId(storeId),
-        enabled: !!storeId, 
+export const useFetchProductByStoreId = (storeId: string, page: number) => {
+    return useQuery<ProductsData>({
+      queryKey: [QUERYKEYS.listProductsByStoreId, storeId, page],
+      queryFn: () => listProductsByStoreId(storeId, page),
+      enabled: !!storeId, // Somente executa se o storeId estiver definido
     });
-}
-
+  };
