@@ -12,13 +12,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "../ui/toaster";
-import { CheckIcon,StopIcon,Cross1Icon } from "@radix-ui/react-icons";
+import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 
 export function UpdateProductDialog(product: ProductProps) {
-    const [isOpen, setIsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [uploadError, setUploadError] = useState<string | null>(null);
-    const [priceValue, setPriceValue] = useState<string>("");
+    const [priceValue, setPriceValue] = useState<string>(""); // Novo estado para o valor formatado do preço
+    const [selectedCategory, setSelectedCategory] = useState<string>(""); // Novo estado para categoria selecionada
     const { toast } = useToast();
     const { mutateAsync: updateProduct, isPending, isSuccess } = useUpdateProduct();
     const { data: categories, isLoading: isLoadingCategories } = useListCategories();
@@ -26,7 +26,7 @@ export function UpdateProductDialog(product: ProductProps) {
     const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<UpdateProductSchemaType>({
         resolver: zodResolver(UpdateProductSchema),
     });
-    const { mutateAsync: deleteProduct, isPending: isPendingDeleteProduct, isSuccess: isSuccessDeleteProduct, reset: resetDeleteProduct } = useDeleteProduct();
+    const { mutateAsync: deleteProduct, isPending: isPendingDeleteProduct, reset: resetDeleteProduct } = useDeleteProduct();
 
     useEffect(() => {
         if (productCompleteData) {
@@ -37,14 +37,34 @@ export function UpdateProductDialog(product: ProductProps) {
             setValue("description", productCompleteData.description);
             setValue("category_id", productCompleteData.categoryId);
             setValue("image_url", productCompleteData.imageUrl);
-            setPriceValue(formatCurrency(productCompleteData.priceInCents)); // Formata o valor inicial
+            setPriceValue(formatCurrency(productCompleteData.priceInCents)); // Formata o valor inicial do preço
+            setSelectedCategory(productCompleteData.categoryId); // Preenche o Select com a categoria correta
         }
     }, [productCompleteData, setValue]);
 
+    // Função para formatar o valor como moeda
     const formatCurrency = (valueInCents: number) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valueInCents / 100);
+        return (valueInCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
+    // Função para lidar com a entrada do preço e formatar como moeda
+    const handlePriceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+
+        // Remove todos os caracteres que não são números
+        const rawValue = inputValue.replace(/\D/g, '');
+
+        // Converte para centavos (R$ 1,00 = 100 centavos)
+        const intValue = parseInt(rawValue, 10);
+
+        // Formata o valor de volta para moeda
+        setPriceValue(formatCurrency(intValue));
+
+        // Atualiza o valor em centavos no formulário
+        setValue("price_in_cents", intValue || 0); 
+    };
+
+    // Função para lidar com a seleção de arquivo (imagem)
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -53,60 +73,55 @@ export function UpdateProductDialog(product: ProductProps) {
         }
     };
 
-    const handlePriceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const rawValue = event.target.value.replace(/[^\d]/g, ''); // Remove tudo exceto números
-        setPriceValue(rawValue);
-        setValue("price_in_cents", parseInt(rawValue) || 0); // Atualiza o valor em centavos
-    };
+    const onSubmit = async (data: UpdateProductSchemaType) => {
+        try {
+            let imageUrl = data.image_url;
 
-    async function RegisterProductFunction(data: UpdateProductSchemaType) {
-        let imageUrl = "";
-
-        if (selectedImage) {
-            const uploadResult = await uploadProductImage(selectedImage, "my-little-pet-products");
-            if (uploadResult.error) {
-                setUploadError(uploadResult.error.message);
-                return;
-            } else {
-                imageUrl = uploadResult.publicUrl || "";
+            // Se uma nova imagem for selecionada, faça o upload
+            if (selectedImage) {
+                const uploadResult = await uploadProductImage(selectedImage, "my-little-pet-products");
+                if (uploadResult.error) {
+                    setUploadError(uploadResult.error.message);
+                    return;
+                } else {
+                    imageUrl = uploadResult.publicUrl || imageUrl;
+                }
             }
-        }
 
-        await updateProduct({
-            id: data.id,
-            image_url: imageUrl || data.image_url,
-            title: data.title,
-            description: data.description,
-            stock: data.stock,
-            price_in_cents: data.price_in_cents,
-            category_id: data.category_id,
-        });
+            await updateProduct({
+                id: data.id,
+                image_url: imageUrl,
+                title: data.title,
+                description: data.description,
+                stock: data.stock,
+                price_in_cents: data.price_in_cents,
+                category_id: data.category_id,
+            });
 
-        if (isSuccess) {
             toast({
                 title: "Produto atualizado com sucesso!",
             });
-            reset();
+            reset(); // Reseta o formulário
             setSelectedImage(null);
-            setIsOpen(false);
+        } catch (error) {
+            toast({
+                title: "Erro ao atualizar o produto",
+                description: error instanceof Error ? error.message : "Erro desconhecido.",
+                variant: "destructive",
+            });
         }
-    }
+    };
 
-    async function DeleteProductHandler() {
+    const handleDelete = async () => {
         const confirmed = confirm("Você tem certeza que deseja excluir este produto?");
         if (confirmed) {
             await deleteProduct({ id: productCompleteData?.id ?? "" });
-
-            if (isSuccessDeleteProduct) {
-                toast({
-                    title: "Produto deletado com sucesso!",
-                });
-                resetDeleteProduct();
-                setSelectedImage(null);
-                setIsOpen(false);
-            }
+            toast({
+                title: "Produto deletado com sucesso!",
+            });
+            resetDeleteProduct();
         }
-    }
+    };
 
     return (
         <Dialog>
@@ -116,42 +131,67 @@ export function UpdateProductDialog(product: ProductProps) {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{product.title}</DialogTitle>
-                    <div>{productCompleteData?.isActive ?<div className="flex flex-row items-center gap-2"> <CheckIcon fontSize={32} className="text-primary"/> <p className="text-primary">Produto Ativo</p></div> : <div className="flex flex-row items-center gap-2"> <Cross1Icon fontSize={32} className="text-destructive"/> <p className="text-destructive">Produto Inativo</p></div>}</div>
+                    <div>
+                        {productCompleteData?.isActive ? (
+                            <div className="flex flex-row items-center gap-2">
+                                <CheckIcon fontSize={32} className="text-primary" />
+                                <p className="text-primary">Produto Ativo</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-row items-center gap-2">
+                                <Cross1Icon fontSize={32} className="text-destructive" />
+                                <p className="text-destructive">Produto Inativo</p>
+                            </div>
+                        )}
+                    </div>
                 </DialogHeader>
 
                 <DialogDescription>Atualize as informações do produto</DialogDescription>
-                <form onSubmit={handleSubmit(RegisterProductFunction)}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-2">
+                        {/* Título */}
                         <div className="gap-2 flex flex-col">
                             <Label>Título</Label>
                             <Input type="text" {...register("title")} disabled={isPending} />
-                            {errors.title && <span className="font-normal text-sm text-red-500">{errors.title.message}</span>}
+                            {errors.title && <span className="text-sm text-red-500">{errors.title.message}</span>}
                         </div>
+
+                        {/* Descrição */}
                         <div className="gap-2 flex flex-col">
                             <Label>Descrição</Label>
                             <Input type="text" {...register("description")} disabled={isPending} />
-                            {errors.description && <span className="font-normal text-sm text-red-500">{errors.description.message}</span>}
+                            {errors.description && <span className="text-sm text-red-500">{errors.description.message}</span>}
                         </div>
+
+                        {/* Preço */}
                         <div className="gap-2 flex flex-col">
                             <Label>Preço R$</Label>
                             <Input
                                 type="text"
-                                value={priceValue}
-                                onInput={handlePriceInput}
-                                className="text-right no-spinners"
+                                value={priceValue} // Exibe o valor formatado
+                                onChange={handlePriceInput} // Chama a função ao digitar
+                                className="text-right"
                                 disabled={isPending}
                             />
                             {errors.price_in_cents && <span className="font-normal text-sm text-red-500">{errors.price_in_cents.message}</span>}
                         </div>
+
+                        {/* Estoque */}
                         <div className="gap-2 flex flex-col">
                             <Label>Estoque</Label>
-                            <Input type="number" {...register("stock", { valueAsNumber: true })} className="text-right no-spinners" disabled={isPending} />
-                            {errors.stock && <span className="font-normal text-sm text-red-500">{errors.stock.message}</span>}
+                            <Input type="number" {...register("stock", { valueAsNumber: true })} className="text-right" disabled={isPending} />
+                            {errors.stock && <span className="text-sm text-red-500">{errors.stock.message}</span>}
                         </div>
+
+                        {/* Categoria */}
                         <div className="gap-2 flex flex-col">
                             <Label>Categoria</Label>
                             <Select
-                                onValueChange={(value) => setValue("category_id", value)}
+                                value={selectedCategory} // Define o valor do Select com a categoria selecionada
+                                onValueChange={(value) => {
+                                    setValue("category_id", value);
+                                    setSelectedCategory(value);
+                                }}
                                 disabled={isPending || isLoadingCategories}
                             >
                                 <SelectTrigger>
@@ -172,20 +212,24 @@ export function UpdateProductDialog(product: ProductProps) {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            {errors.category_id && <span className="font-normal text-sm text-red-500">{errors.category_id.message}</span>}
+                            {errors.category_id && <span className="text-sm text-red-500">{errors.category_id.message}</span>}
                         </div>
+
+                        {/* Imagem */}
                         <div className="gap-2 flex flex-col">
                             <Label>Imagem do Produto</Label>
                             <Input
                                 type="file"
-                                accept="image/png, image/jpeg, image/jpg, image/svg"
+                                accept="image/png, image/jpeg"
                                 onChange={handleFileChange}
                                 disabled={isPending}
                             />
-                            {uploadError && <span className="font-normal text-sm text-red-500">{uploadError}</span>}
+                            {uploadError && <span className="text-sm text-red-500">{uploadError}</span>}
                         </div>
+
+                        {/* Botões de Ação */}
                         <DialogFooter>
-                            <Button variant="destructive" onClick={DeleteProductHandler}>
+                            <Button variant="destructive" type="button" onClick={handleDelete}>
                                 {isPendingDeleteProduct ? 'Deletando...' : 'Deletar Produto'}
                             </Button>
                             <Button type="submit" disabled={isPending}>

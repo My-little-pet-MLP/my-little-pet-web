@@ -35,7 +35,7 @@ export default function ProdutosPage({ params }: { params: { pageNumber: string 
 
   // Aqui estamos tipando productsData corretamente
   const { data: productsData, isLoading: isLoadingProducts, isFetching, error: errorProducts } = useFetchProductByStoreId(storeId ?? "", page);
-
+  console.log(productsData)
   if (isLoadingStore || isLoadingProducts || isFetching) {
     return <LoadingPageProduct />;
   }
@@ -111,26 +111,26 @@ export default function ProdutosPage({ params }: { params: { pageNumber: string 
               ))}
             </div>
             {/* Paginação */}
-            <CardFooter className="mt-4  flex flex-row items-center justify-end gap-2">
+            <CardFooter className="mt-4 flex flex-row items-center justify-end gap-2">
               <span className="mx-4 text-secondary-foreground">
                 Página {productsData.currentPage} de {productsData.totalPages}
               </span>
+
               <Button
-                disabled={page <= 1}
+                disabled={page <= 1} // O botão para página anterior só estará habilitado se a página atual for maior que 1
                 onClick={() => window.location.href = `/dashboard/produtos/${page - 1}`}
-                className="px-4 py-2  rounded-md"
+                className="px-4 py-2 rounded-md"
               >
                 {page - 1}
               </Button>
 
               <Button
-                disabled={page >= productsData.totalPages}
+                disabled={page >= productsData.totalPages} // O botão para próxima página só estará habilitado se a página atual for menor que o total de páginas
                 onClick={() => window.location.href = `/dashboard/produtos/${page + 1}`}
-                className="px-4 py-2  rounded-md"
+                className="px-4 py-2 rounded-md"
               >
                 {page + 1}
               </Button>
-
             </CardFooter>
           </Card>
         )}
