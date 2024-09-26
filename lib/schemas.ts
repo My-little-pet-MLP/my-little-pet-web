@@ -50,3 +50,15 @@ export const storeUpdateSchema = z.object({
 })
 
 export type UpdateStoreSchemaType = z.infer<typeof storeUpdateSchema>
+
+export const UpdateProductSchema = z.object({
+    id: z.string().min(1, "id is required"),
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "description is required"),
+    image_url: z.string().url().min(1, "image_url is required"),
+    price_in_cents: z.number().int().min(0, "price_in_cents > 0"),
+    stock: z.number().int().min(0, "stock > 0"),
+    category_id: z.string()
+})
+
+export type UpdateProductSchemaType = z.infer<typeof UpdateProductSchema>
