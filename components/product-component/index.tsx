@@ -2,22 +2,32 @@ import Image from "next/image";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { ProductProps } from "@/app/dashboard/produtos/[pageNumber]/page";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { uploadProductImage } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@clerk/nextjs";
+import { useGetProductById, useUpdateProduct } from "@/lib/react-query/products-queries-and-mutations";
+import { useListCategories } from "@/lib/react-query/categories-queries-and-mutation";
+import { useForm } from "react-hook-form";
+import { UpdateProductSchema, UpdateProductSchemaType } from "@/lib/schemas";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { set } from "zod";
+import { UpdateProductDialog } from "./update-product-dialog";
 
 export function ProductComponent(product: ProductProps) {
-  // Função para formatar o valor de centavos para reais
-  const formatPrice = (priceInCents: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(priceInCents / 100);
+
+
+
+
+  const formatCurrency = (valueInCents: number) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valueInCents / 100);
   };
 
-  // Função de navegação para a página de edição
-  function onNavigationProductPage() {
-    // Lógica de navegação aqui
-  }
 
-  // Função para limitar o tamanho do texto
-  const truncateText = (text: string, maxLength: number) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-  };
+
 
   return (
     <Card key={product.id} className="h-80 w-full max-w-xs flex flex-col justify-between shadow-md">
@@ -31,16 +41,14 @@ export function ProductComponent(product: ProductProps) {
           priority
         />
         <CardTitle className="w-full text-center text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">
-          {truncateText(product.title, 25)} {/* Limitar o título a 25 caracteres */}
+          {product.title}
         </CardTitle>
         <div className="grid grid-cols-1 w-full text-center">
-          <CardDescription className="text-sm font-semibold">{formatPrice(product.priceInCents)}</CardDescription>
+          <CardDescription className="text-sm font-semibold">{formatCurrency(product.priceInCents)}</CardDescription>
           <CardDescription className="text-xs sm:text-sm">Estoque: {product.stock}</CardDescription>
         </div>
         <div className="w-full mt-auto">
-          <Button className="w-full text-xs" onClick={onNavigationProductPage}>
-            Editar
-          </Button>
+          <UpdateProductDialog id={product.id} title={product.title} imageUrl={product.imageUrl} priceInCents={product.priceInCents} stock={product.stock} key={product.id} />
         </div>
       </CardContent>
     </Card>
