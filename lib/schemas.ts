@@ -34,14 +34,28 @@ export const RegisterProductSchema = z.object({
 export type RegisterProductType = z.infer<typeof RegisterProductSchema>;
 
 
-export const storeRegisterSchema = z.object({
+// Função para remover a formatação do CNPJ
+export const removeCNPJFormatting = (cnpj: string) => {
+    return cnpj.replace(/\D/g, ""); // Remove todos os caracteres que não são dígitos
+  };
+  
+  // Esquema de validação com Zod
+  export const storeRegisterSchema = z.object({
     title: z.string().min(1, "Título é obrigatório"),
     description: z.string().min(1, "Descrição é obrigatória"),
-    cnpj: z.string().length(14, "CNPJ deve ter 14 caracteres"),
-});
-
-export type RegisterStoreSchema = z.infer<typeof storeRegisterSchema>
-
+    cnpj: z
+      .string()
+      .min(1, "CNPJ é obrigatório")
+      .refine(
+        (cnpj) => {
+          const unformattedCNPJ = removeCNPJFormatting(cnpj);
+          return unformattedCNPJ.length === 14;
+        },
+        { message: "CNPJ deve ter 14 caracteres numéricos" }
+      ),
+  });
+  
+  export type RegisterStoreSchema = z.infer<typeof storeRegisterSchema>;
 
 export const storeUpdateSchema = z.object({
     title: z.string(),
