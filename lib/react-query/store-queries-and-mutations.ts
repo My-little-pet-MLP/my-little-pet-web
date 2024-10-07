@@ -1,9 +1,10 @@
 import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERYKEYS } from "./query-is";
 import { RegisterStore } from "@/hooks/store/register-store";
 import { UpdateStore } from "@/hooks/store/update-store";
 import { getStoreById } from "@/hooks/store/get-store-by-id";
+import { DeleteStoreById } from "@/hooks/store/delete-store-by-id";
 
 // Definindo o tipo Store
 export interface Store {
@@ -58,5 +59,21 @@ export const useUpdateStore = () => {
     onError: (error) => {
       console.error("Erro ao atualizar a loja: " + error);
     }
+  });
+}
+
+
+export const useDeleteStore = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+      mutationFn: (
+          { id }: {id: string;}) => DeleteStoreById(id),
+      onSuccess: () => {
+          console.log("Loja Deletado com sucesso!");
+          queryClient.invalidateQueries({ queryKey: [QUERYKEYS.getStoreById,QUERYKEYS.getStoreByUserId] });
+      },
+      onError: (error) => {
+          console.error("Erro ao deletadar a loja:", error);
+      },
   });
 }

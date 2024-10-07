@@ -17,6 +17,7 @@ import { uploadLogoImage } from "@/lib/supabase"
 import { useAuth } from "@clerk/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Package, Terminal } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
@@ -76,10 +77,10 @@ export function DialogEditProfile() {
         });
 
         if (isSuccess) {
-           toast({
-            title: "Atualizado com sucesso",
-            description: "Parabens, informações de loja atualizadas!",
-           })
+            toast({
+                title: "Atualizado com sucesso",
+                description: "Parabens, informações de loja atualizadas!",
+            })
             setIsOpen(false);
         }
     }
@@ -100,7 +101,16 @@ export function DialogEditProfile() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger>
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center text-primary-foreground rounded-full bg-primary">
-                    <Package className="h-4 w-4" />
+                    <Image
+                        src={
+                            storeData?.imageUrl ??
+                            "https://jfwzshiyyvxklcuuzueu.supabase.co/storage/v1/object/public/my-little-pet-logo/my-little-pet-logo/1727117750658_eduardo%20petshop%20logo.png?t=2024-10-07T17%3A34%3A31.748Z"
+                        }
+                        alt={storeData?.title ?? "Logo da loja"} // Adicione um texto alternativo
+                        className="h-12 w-12 rounded-full" // Ajuste as classes para se adaptar melhor ao layout
+                        width={48} // Largura da imagem (em pixels)
+                        height={48} // Altura da imagem (em pixels)
+                    />
                     <span className="sr-only">Dashboard Avatar</span>
                 </div>
             </DialogTrigger>
