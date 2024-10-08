@@ -7,21 +7,23 @@ import { CardDashboardFaturamento, CardDashboardVendas } from "../../components/
 import { PizzaPaymentFormChart } from "../../components/pizza-payment-form-chart";
 import { useQuery } from "@tanstack/react-query";
 import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const router = useRouter();
   const userid = user?.id ?? ""
   const { data: storeData, isLoading, error } = useQuery({
-    queryKey: ["getStoreByUserId"], 
-    queryFn: () => getStoreByUserId(userid), 
+    queryKey: ["getStoreByUserId"],
+    queryFn: () => getStoreByUserId(userid),
     enabled: !!userid
   });
 
-  
+
   if (!user) {
     router.push("/sign-in");
-    return null; 
+    return null;
   }
 
   if (isLoading) {
@@ -48,6 +50,10 @@ export default function Dashboard() {
     router.push("/register-store");
     return null;
   }
+  if (storeData.isActive != true) {
+    router.push("/welcome-back")
+  }
+
 
   return (
     <main className="sm:ml-14 pt-6">

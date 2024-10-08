@@ -14,7 +14,7 @@ import {
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useDeleteStore } from "@/lib/react-query/store-queries-and-mutations"
-import { useUser } from "@clerk/nextjs"
+import { SignedOut, useClerk, useUser } from "@clerk/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id"
 
@@ -23,7 +23,7 @@ export default function Settings() {
   const router = useRouter()
   const [mounted, setMounted] = React.useState(false)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-
+  const { signOut } = useClerk();
   // Evitar problemas de hidratação definindo o estado montado
   React.useEffect(() => {
     setMounted(true)
@@ -53,11 +53,13 @@ export default function Settings() {
   const { mutateAsync: deleteStore, isPending } = useDeleteStore()
 
   async function handlerDeleteStore() {
-    if (!storeData?.id) return
+    if (!storeData?.id) 
+      return
 
     try {
       await deleteStore({ id: storeData.id })
       setIsDialogOpen(false) // Fecha o diálogo antes do redirecionamento
+      await signOut()
       router.push("/") // Redirecionar após deletar a loja
     } catch (err) {
       console.error("Erro ao deletar a loja:", err)
