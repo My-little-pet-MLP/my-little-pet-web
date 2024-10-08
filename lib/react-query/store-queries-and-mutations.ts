@@ -5,6 +5,7 @@ import { RegisterStore } from "@/hooks/store/register-store";
 import { UpdateStore } from "@/hooks/store/update-store";
 import { getStoreById } from "@/hooks/store/get-store-by-id";
 import { DeleteStoreById } from "@/hooks/store/delete-store-by-id";
+import { ReactivateStoreById } from "@/hooks/store/reactive-store-by-id";
 
 // Definindo o tipo Store
 export interface Store {
@@ -74,6 +75,21 @@ export const useDeleteStore = () => {
       },
       onError: (error) => {
           console.error("Erro ao deletadar a loja:", error);
+      },
+  });
+}
+
+export const useReactiveStoreById = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+      mutationFn: (
+          { id }: {id: string;}) => ReactivateStoreById(id),
+      onSuccess: () => {
+          console.log("Loja reativada com sucesso!");
+          queryClient.invalidateQueries({ queryKey: [QUERYKEYS.getStoreById,QUERYKEYS.getStoreByUserId,QUERYKEYS.listProductsByStoreId] });
+      },
+      onError: (error) => {
+          console.error("Erro ao reativar a loja:", error);
       },
   });
 }

@@ -14,7 +14,7 @@ import {
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useDeleteStore } from "@/lib/react-query/store-queries-and-mutations"
-import { SignedOut, useClerk, useUser } from "@clerk/nextjs"
+import { useClerk, useUser } from "@clerk/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id"
 
