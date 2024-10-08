@@ -11,17 +11,17 @@ import { getStoreByUserId } from "@/hooks/store/get-store-by-user-id";
 export default function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const router = useRouter();
-
+  const userid = user?.id ?? ""
   const { data: storeData, isLoading, error } = useQuery({
-    queryKey: ["getStoreByUserId", user?.id], // Use user?.id em vez de user!.id
-    queryFn: () => getStoreByUserId(user!.id), // Garantido que user!.id é válido após a verificação
-    enabled: isLoaded && isSignedIn && user?.id != null, // Habilita a query se o usuário estiver logado e carregado
+    queryKey: ["getStoreByUserId"], 
+    queryFn: () => getStoreByUserId(userid), 
+    enabled: !!userid
   });
 
-  // Verificação e redirecionamento quando os dados da loja são obtidos
-  if (!isLoaded || !isSignedIn || !user) {
+  
+  if (!user) {
     router.push("/sign-in");
-    return null; // Retorna null enquanto redireciona para evitar o carregamento de conteúdo desnecessário
+    return null; 
   }
 
   if (isLoading) {
@@ -44,7 +44,7 @@ export default function Dashboard() {
   }
 
   // Se a loja não existir ou estiver com dados incompletos, redireciona para o cadastro de loja
-  if (!storeData?.id || !storeData?.title || !storeData?.description) {
+  if (!storeData?.id) {
     router.push("/register-store");
     return null;
   }

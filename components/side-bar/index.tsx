@@ -9,18 +9,23 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; // hook para obter a rota atual
 import { useClerk } from "@clerk/nextjs";
 import { Toaster } from "../ui/toaster";
+import { useRouter } from "next/navigation";
 
 export function SideBarDashboard() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname(); // Obtém a rota atual
     const { signOut } = useClerk();
+    const router = useRouter();
     // Fechar o Sheet ao mudar a rota
     useEffect(() => {
         setIsOpen(false); // Fecha o sheet toda vez que a rota muda
     }, [pathname]); // Monitora mudanças na rota
-
-
-
+    async function SignOutHandler(){
+        setIsOpen(false);
+        await signOut();
+        router.push("/");
+        
+    }
     return (
         <>
             <div className="flex w-full flex-col bg-muted/40">
@@ -81,11 +86,7 @@ export function SideBarDashboard() {
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <button
-                                        onClick={() => {
-                                            // Fechar o sheet e realizar a ação de logout
-                                            setIsOpen(false);
-                                            signOut();
-                                        }}
+                                        onClick={() => SignOutHandler()}
                                         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
                                     >
                                         <LogOut className="h-5 w-5 text-red-500" />
@@ -131,11 +132,7 @@ export function SideBarDashboard() {
                                         Configurações
                                     </Link>
                                     <button
-                                        onClick={() => {
-                                            // Fechar o sheet e realizar a ação de logout
-                                            setIsOpen(false);
-                                            signOut();
-                                        }}
+                                        onClick={() => SignOutHandler()}
                                         className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground text-red-500"
                                     >
                                         <LogOut className="h-5 w-5 transition-all" />

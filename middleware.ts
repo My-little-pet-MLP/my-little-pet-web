@@ -6,10 +6,7 @@ const isPublicRoute = createRouteMatcher(publicRoutes);
 
 export default clerkMiddleware((auth, request) => {
     const { userId } = auth();
-    if (userId && isPublicRoute(request)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-    return undefined;
+    
 })
 
 export const config = {
