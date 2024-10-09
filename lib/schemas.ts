@@ -76,3 +76,15 @@ export const UpdateProductSchema = z.object({
 })
 
 export type UpdateProductSchemaType = z.infer<typeof UpdateProductSchema>
+
+
+
+export const addRegisterSchema = z.object({
+  title: z.string().min(1, "Título é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
+  externalLink:z.string().min(1,"link é obrigatorio"),
+  limiteDate: z.string().date(),
+  credit: z.number().int().min(1,"valor minimo é R$1,00")
+});
+
+export type AddRegisterSchemaSchemaType = z.infer<typeof addRegisterSchema>
