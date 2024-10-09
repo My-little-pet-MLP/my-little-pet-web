@@ -33,23 +33,11 @@ export default function Dashboard() {
       </main>
     );
   }
-
-  if (error) {
-    return (
-      <main className="sm:ml-14 pt-6">
-        <p>Erro ao verificar a loja.</p>
-        <button onClick={() => router.push("/")} className="mt-4 p-2 bg-green-500 text-white rounded">
-          Voltar à página inicial
-        </button>
-      </main>
-    );
-  }
-
-  // Se a loja não existir ou estiver com dados incompletos, redireciona para o cadastro de loja
-  if (!storeData?.id) {
+  if (error || !storeData) {
     router.push("/register-store");
     return null;
   }
+
   if (storeData.isActive != true) {
     router.push("/welcome-back")
   }
