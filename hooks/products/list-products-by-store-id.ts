@@ -6,7 +6,7 @@ export async function listProductsByStoreId(store_id: string, page: number, size
         throw new Error('ID da loja é obrigatório para listar os produtos.');
       }
   
-      const response = await axiosInstance.get(`https://product-microservice-mlp.onrender.com/product/listbystore?store_id=${store_id}&page=${page}&size=${size}`);
+      const response = await axiosInstance.get(`/product/listbystore?store_id=${store_id}&page=${page}&size=${size}`);
   
   
       if (response.status !== 200 || !response.data) {

@@ -6,19 +6,8 @@ import { UpdateStore } from "@/hooks/store/update-store";
 import { getStoreById } from "@/hooks/store/get-store-by-id";
 import { DeleteStoreById } from "@/hooks/store/delete-store-by-id";
 import { ReactivateStoreById } from "@/hooks/store/reactive-store-by-id";
+import { Store } from "@/@types/store";
 
-// Definindo o tipo Store
-export interface Store {
-  id: string;
-  imageUrl: string;
-  title: string;
-  description: string;
-  cnpj: string;
-  userId: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 // Hook para obter a loja pelo userId
 export const useGetStoreByUserId = (userId: string) => {

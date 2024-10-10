@@ -3,5 +3,8 @@ export enum QUERYKEYS {
     getStoreByUserId = "getStoreByUserId",
     listCategories = "listCategories",
     getStoreById = "getStoreById",
-    getProductById = "getProductById"
+    getProductById = "getProductById",
+    getProductInOrderById = "getProductInOrderById",
+    listProductInOrdersByOrderId =  "listProductInOrdersByOrderId",
+    listOrdersByStoreId = "listOrdersByStoreId"
 }

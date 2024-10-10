@@ -57,7 +57,15 @@ export function RegisterAddDialog() {
         }).format(num / 100);
     };
     const handlePriceInput = (event: any) => {
-        event.target.value = formatCurrency(event.target.value);
+        const value = event.target.value;
+        // Remove tudo que não é número
+        const num = value.replace(/[^\d]/g, '');
+    
+        // Atualiza o valor do input para a moeda formatada
+        event.target.value = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(num / 100);
     };
     function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0];
@@ -111,11 +119,12 @@ export function RegisterAddDialog() {
                         </div>
                         <div className="gap-2 flex flex-col">
                             <Label>Data Limite</Label>
-                            <Input 
+                            <Input
                                 className="justify-end"
                                 type="date"
                                 {...register("limiteDate")} // Aqui você registra o campo de data
                                 disabled={isPending}
+                                max="2050-12-31"
                             />
                             {errors.limiteDate && <span className="font-normal text-sm text-red-500">{errors.limiteDate.message}</span>}
                         </div>
@@ -124,11 +133,15 @@ export function RegisterAddDialog() {
                             <Input
                                 type="text"
                                 {...register("credit")}
-                                onInput={handlePriceInput}
+                                onInput={handlePriceInput} // Formatação da moeda
                                 className="text-right no-spinners"
                                 disabled={isPending}
                             />
-                            {errors.credit && <span className="font-normal text-sm text-red-500">{errors.credit.message}</span>}
+                            {errors.credit && (
+                                <span className="font-normal text-sm text-red-500">
+                                    {errors.credit.message}
+                                </span>
+                            )}
                         </div>
                         <div className="gap-2 flex flex-col">
                             <Label>Imagem</Label>

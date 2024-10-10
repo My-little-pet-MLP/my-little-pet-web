@@ -82,9 +82,39 @@ export type UpdateProductSchemaType = z.infer<typeof UpdateProductSchema>
 export const addRegisterSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
-  externalLink:z.string().min(1,"link é obrigatorio"),
-  limiteDate: z.string().date(),
-  credit: z.number().int().min(1,"valor minimo é R$1,00")
+  externalLink: z.string().min(1, "Link é obrigatório"),
+  limiteDate: z
+    .string()
+    .refine(
+      (date) => /^\d{4}-\d{2}-\d{2}$/.test(date), // Verifica se a data está no formato YYYY-MM-DD
+      {
+        message: "A data deve estar no formato YYYY-MM-DD e conter 4 dígitos no ano",
+      }
+    )
+    .refine(
+      (date) => new Date(date) > new Date(), // Verifica se a data limite é maior que a data de hoje
+      {
+        message: "A data limite deve ser uma data futura",
+      }
+    )
+    .refine(
+      (date) => new Date(date) <= new Date('2050-12-31'), // Limita a data até 31/12/2050
+      {
+        message: "A data limite não pode ser maior que 31/12/2050",
+      }
+    ),
+    credit: z.string().transform((value) => {
+      // Remove qualquer coisa que não seja um número (incluindo R$ e vírgulas)
+      const parsedValue = value.replace(/[^\d]/g, '');
+      const numericValue = Number(parsedValue);
+  
+      // Verifica se o valor convertido é um número válido
+      if (isNaN(numericValue) || numericValue <= 0) {
+          throw new Error("O valor deve ser um número inteiro positivo!");
+      }
+  
+      return numericValue;
+  }),
 });
 
 export type AddRegisterSchemaSchemaType = z.infer<typeof addRegisterSchema>
