@@ -5,33 +5,9 @@ import { listProductsByStoreId } from "@/hooks/products/list-products-by-store-i
 import { UpdateProductById } from "@/hooks/products/update-product-by-id";
 import { getProductById } from "@/hooks/products/get-products-by-id";
 import { DeleteProductById } from "@/hooks/products/delete-product-by-id";
+import { ProductsData,ProductProps, ProductComplete } from "@/@types/products";
 
-export interface ProductProps {
-    id: string;
-    title: string;
-    imageUrl: string;
-    priceInCents: number;
-    stock: number;
-}
-export interface ProductsData {
-    products: ProductProps[];
-    totalPages: number;
-    currentPage: number;
-}
-interface ProductComplete {
-    id: string;
-    title: string;
-    slug: string;
-    imageUrl: string;
-    description: string;
-    priceInCents: number;
-    stock: number;
-    categoryId: string;
-    storeId: string;
-    isActive: boolean;
-    createdAt: string; // ou Date, dependendo de como quer trabalhar com datas
-    updatedAt: string; // ou Date
-  }
+
 export const usePostProduct = () => {
     const queryClient = useQueryClient();
 
@@ -71,7 +47,7 @@ export const useFetchProductByStoreId = (storeId: string, page: number) => {
     });
 };
 
-export const useGetProductById = (id:string) => {
+export const useGetProductById = (id: string) => {
     return useQuery<ProductComplete>({
         queryKey: [QUERYKEYS.getProductById, id],
         queryFn: () => getProductById(id),
@@ -112,7 +88,7 @@ export const useDeleteProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (
-            { id }: {id: string;}) => DeleteProductById(id),
+            { id }: { id: string; }) => DeleteProductById(id),
         onSuccess: () => {
             console.log("Produto Deletado com sucesso!");
             queryClient.invalidateQueries({ queryKey: [QUERYKEYS.listProductsByStoreId] });

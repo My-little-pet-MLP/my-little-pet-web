@@ -6,7 +6,7 @@ export async function getProductById(id:string) {
         throw new Error('ID é obrigatório');
       }
   
-      const response = await axiosInstance.get(`https://product-microservice-mlp.onrender.com/product/${id}`);
+      const response = await axiosInstance.get(`/product/${id}`);
   
   
       if (response.status !== 200 || !response.data) {
