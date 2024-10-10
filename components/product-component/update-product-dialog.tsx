@@ -6,13 +6,14 @@ import { Label } from "../ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 import { uploadProductImage } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-import { ProductProps, useDeleteProduct, useGetProductById, useUpdateProduct } from "@/lib/react-query/products-queries-and-mutations";
+import {  useDeleteProduct, useGetProductById, useUpdateProduct } from "@/lib/react-query/products-queries-and-mutations";
 import { useListCategories } from "@/lib/react-query/categories-queries-and-mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "../ui/toaster";
 import { CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
+import { ProductProps } from "@/@types/products";
 
 export function UpdateProductDialog(product: ProductProps) {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
