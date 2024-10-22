@@ -26,23 +26,20 @@ export function UpdateProductDialog(product: ProductProps) {
     const { data: productCompleteData, isLoading: isLoadingProductComplete } = useGetProductById(product.id);
     const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<UpdateProductSchemaType>({
         resolver: zodResolver(UpdateProductSchema),
+        values:{
+            title:productCompleteData?.title ?? "",
+            category_id: productCompleteData?.categoryId ?? "",
+            description: productCompleteData?.description ?? "",
+            id: productCompleteData?.id ?? "",
+            image_url: productCompleteData?.imageUrl ?? "",
+            price_in_cents: productCompleteData?.priceInCents ?? 0,
+            stock: productCompleteData?.stock ?? 0
+        }
     });
+    console.log(productCompleteData)
     const { mutateAsync: deleteProduct, isPending: isPendingDeleteProduct, reset: resetDeleteProduct } = useDeleteProduct();
 
-    useEffect(() => {
-        if (productCompleteData) {
-            setValue("id", productCompleteData.id);
-            setValue("title", productCompleteData.title);
-            setValue("stock", productCompleteData.stock);
-            setValue("price_in_cents", productCompleteData.priceInCents);
-            setValue("description", productCompleteData.description);
-            setValue("category_id", productCompleteData.categoryId);
-            setValue("image_url", productCompleteData.imageUrl);
-            setPriceValue(formatCurrency(productCompleteData.priceInCents)); // Formata o valor inicial do preço
-            setSelectedCategory(productCompleteData.categoryId); // Preenche o Select com a categoria correta
-        }
-    }, [productCompleteData, setValue]);
-
+   
     // Função para formatar o valor como moeda
     const formatCurrency = (valueInCents: number) => {
         return (valueInCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -169,7 +166,7 @@ export function UpdateProductDialog(product: ProductProps) {
                             <Label>Preço R$</Label>
                             <Input
                                 type="text"
-                                value={priceValue} // Exibe o valor formatado
+                                {...register("price_in_cents")}
                                 onChange={handlePriceInput} // Chama a função ao digitar
                                 className="text-right"
                                 disabled={isPending}
