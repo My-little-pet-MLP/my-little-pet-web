@@ -65,6 +65,7 @@ export const storeUpdateSchema = z.object({
 
 export type UpdateStoreSchemaType = z.infer<typeof storeUpdateSchema>
 
+// mudar o priceincents para string e validar com regex depois
 export const UpdateProductSchema = z.object({
     id: z.string().min(1, "id is required"),
     title: z.string().min(1, "Title is required"),
