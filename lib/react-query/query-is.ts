@@ -6,5 +6,7 @@ export enum QUERYKEYS {
     getProductById = "getProductById",
     getProductInOrderById = "getProductInOrderById",
     listProductInOrdersByOrderId =  "listProductInOrdersByOrderId",
-    listOrdersByStoreId = "listOrdersByStoreId"
+    listOrdersByStoreId = "listOrdersByStoreId",
+    getTotalBillingMonthSome = "getTotalBillingMonthSome",
+    someTotalSalesInMonth= "someTotalSalesInMonth"
 }
