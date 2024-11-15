@@ -21,6 +21,6 @@ export interface ProductComplete {
     categoryId: string;
     storeId: string;
     isActive: boolean;
-    createdAt: string; 
-    updatedAt: string; 
+    createdAt: string;
+    updatedAt: string;
 }

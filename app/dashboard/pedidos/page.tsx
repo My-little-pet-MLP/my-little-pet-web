@@ -11,7 +11,7 @@ export default function Pedidos() {
                 </Card>
             </section>
             <section>
-             
+
             </section>
             <section>
                 <TableOrders />

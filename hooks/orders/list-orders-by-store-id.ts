@@ -12,7 +12,7 @@ export async function listOrdersByStoreId(store_id: string, page: number, size: 
       if (response.status !== 200 || !response.data) {
         throw new Error('Falha ao listar os pedidos.');
       }
-  
+      console.log( response.data);
       return response.data;
     } catch (error: any) {
   

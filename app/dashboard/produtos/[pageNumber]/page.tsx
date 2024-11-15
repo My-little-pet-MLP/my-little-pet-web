@@ -8,7 +8,6 @@ import { DialogFormNewProduct } from "@/components/dialog-form-new-product";
 import { useFetchProductByStoreId } from "@/lib/react-query/products-queries-and-mutations";
 import { useGetStoreByUserId } from "@/lib/react-query/store-queries-and-mutations";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
 
 // Definindo as interfaces
 export interface ProductProps {
