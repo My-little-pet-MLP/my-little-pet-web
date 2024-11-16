@@ -16,6 +16,32 @@ import { useAuth } from "@clerk/nextjs";
 import { useGetStoreByUserId } from "@/lib/react-query/store-queries-and-mutations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import {} from "@radix-ui/react-icons"
+
+export type OrderStatus =
+    | "pending"
+    | "awaiting_payment"
+    | "payment_confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "canceled"
+    | "returned";
+
+// Função para traduzir os status
+const translateStatus = (status: string): string => {
+    const translations: Record<OrderStatus, string> = {
+        pending: "Pendente",
+        awaiting_payment: "Aguardando Pagamento",
+        payment_confirmed: "Pagamento Confirmado",
+        processing: "Em Processamento",
+        shipped: "Enviado",
+        delivered: "Entregue",
+        canceled: "Cancelado",
+        returned: "Devolvido",
+    };
+    return translations[status as OrderStatus] || "Status desconhecido";
+};
 
 export function TableOrders() {
     const { userId } = useAuth();
@@ -59,7 +85,7 @@ export function TableOrders() {
 
     return (
         <Card className="w-full p-6">
-            <CardTitle className="text-2xl">Ultimas vendas</CardTitle>
+            <CardTitle className="text-2xl">Últimas Vendas</CardTitle>
             {orders.length === 0 ? (
                 <div className="flex flex-col justify-center items-center text-center text-muted-foreground h-72">
                     <p>Não há pedidos registrados ainda.</p>
@@ -70,19 +96,24 @@ export function TableOrders() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>ID</TableHead>
-                                <TableHead>Cliente</TableHead>
+                             
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Valor</TableHead>
-                                <TableHead>Saiba mais</TableHead>
+                                <TableHead>Saiba Mais</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {orders.map((order) => (
                                 <TableRow key={order.id}>
                                     <TableCell>{order.id}</TableCell>
-                                    <TableCell>{order.customerId}</TableCell>
-                                    <TableCell>{order.status}</TableCell>
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.fullPriceOrderInCents / 100)}
+                                 
+                                    <TableCell>{translateStatus(order.status)}</TableCell>
+                                    <TableCell className="text-right">
+                                        {new Intl.NumberFormat('pt-BR', {
+                                            style: 'currency',
+                                            currency: 'BRL',
+                                        }).format(order.fullPriceOrderInCents / 100)}
+                                    </TableCell>
                                     <TableCell>
                                         <Link
                                             href={`/dashboard/pedidos/${order.id}`}
@@ -106,7 +137,7 @@ export function TableOrders() {
                                 disabled={currentPage <= 1}
                                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                             >
-                                Previous
+                                Anterior
                             </Button>
                             <Button
                                 variant="outline"
@@ -114,7 +145,7 @@ export function TableOrders() {
                                 disabled={currentPage >= totalPages}
                                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                             >
-                                Next
+                                Próxima
                             </Button>
                         </div>
                     </CardFooter>
