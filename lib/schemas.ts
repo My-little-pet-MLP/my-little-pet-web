@@ -119,3 +119,24 @@ export const addRegisterSchema = z.object({
 });
 
 export type AddRegisterSchemaSchemaType = z.infer<typeof addRegisterSchema>
+
+export const couponSchema = z.object({
+  description: z.string().min(1, "Por favor, insira uma descrição válida para o cupom"),
+  percentage: z
+    .coerce.number()
+    .min(1, "A porcentagem deve ser no mínimo 1")
+    .max(100, "A porcentagem deve ser no máximo 100")
+    .refine((val) => !isNaN(val), "Valor inválido para porcentagem"),
+  validateAt: z
+    .string()
+    .nonempty("Por favor, insira uma data de validade para o cupom")
+    .refine((date) => !isNaN(Date.parse(date)), "Formato de data inválido"),
+  quantity: z
+    .coerce.number()
+    .int("A quantidade deve ser um número inteiro")
+    .positive("A quantidade deve ser maior que 0"),
+  store_id: z.string().nonempty("ID da loja é obrigatório"),
+});
+
+
+export type CouponFormData = z.infer<typeof couponSchema>;

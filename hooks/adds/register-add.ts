@@ -1,8 +1,8 @@
-import { axiosInstanceBanners } from "@/lib/axios";
+import { axiosInstance } from "@/lib/axios";
 
 export async function RegisterAdd(data: { title: string, description: string, external_link: string, limit_date: string, credit: number, image_url: string }) {
     try {
-        const response = await axiosInstanceBanners.post(`/anuncios`, {
+        const response = await axiosInstance.post(`/anuncios`, {
             title: data.title,
             description: data.description,
             external_link: data.external_link,

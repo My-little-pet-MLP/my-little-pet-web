@@ -31,8 +31,11 @@ export function CardDashboardFaturamento({ storeId }: CardDashboardProps) {
                     <span className="text-red-500">Erro ao carregar dados</span>
                 ) : (
                     <span className="text-sm text-center sm:text-start sm:text-base">
-                        R$ {totalSales.toFixed(2)}
-                    </span>
+                    {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                    }).format(totalSales / 100)}
+                </span>
                 )}
             </CardContent>
         </Card>

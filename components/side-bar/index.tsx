@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Flame, Home, LogOut, Package, PanelBottom, Settings, ShoppingBag } from "lucide-react";
+import { Flame, Home, LogOut, Package, PanelBottom, Settings, ShoppingBag, Gift } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { DialogEditProfile } from "./dialog-edit-profile";
 import { useState, useEffect } from "react";
@@ -20,11 +20,11 @@ export function SideBarDashboard() {
     useEffect(() => {
         setIsOpen(false); // Fecha o sheet toda vez que a rota muda
     }, [pathname]); // Monitora mudanças na rota
-    async function SignOutHandler(){
+    async function SignOutHandler() {
         setIsOpen(false);
         await signOut();
         router.push("/");
-        
+
     }
     return (
         <>
@@ -69,6 +69,15 @@ export function SideBarDashboard() {
                                     </Link>
                                 </TooltipTrigger>
                                 <TooltipContent side="right">Produtos</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link href="/dashboard/cupons" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
+                                        <Gift className="h-5 w-5" />
+                                        <span className="sr-only">Cupons</span>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">Cupons</TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </nav>
@@ -123,9 +132,14 @@ export function SideBarDashboard() {
                                         <Flame className="h-5 w-5 transition-all" />
                                         Anuncios
                                     </Link>
+
                                     <Link href="/dashboard/produtos/1" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
                                         <Package className="h-5 w-5 transition-all" />
                                         Produtos
+                                    </Link>
+                                    <Link href="/dashboard/cupons" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
+                                        <Gift className="h-5 w-5 transition-all" />
+                                        Cupons
                                     </Link>
                                     <Link href="/dashboard/settings" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground" prefetch={false}>
                                         <Settings className="h-5 w-5 transition-all" />
