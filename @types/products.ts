@@ -18,8 +18,22 @@ export interface ProductComplete {
     description: string;
     priceInCents: number;
     stock: number;
-    categoryId: string;
-    storeId: string;
+    category: {
+        id: string;
+        title: string;
+        slug: string;
+    };
+    store: {
+        id: string;
+        imageUrl: string;
+        title: string;
+        description: string;
+        cnpj: string;
+        userId: string;
+        isActive: boolean;
+        createdAt: string;
+        updatedAt: string;
+    };
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
