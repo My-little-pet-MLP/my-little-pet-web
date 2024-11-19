@@ -6,7 +6,7 @@ import { Label } from "../ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 import { uploadProductImage } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-import {  useDeleteProduct, useGetProductById, useUpdateProduct } from "@/lib/react-query/products-queries-and-mutations";
+import { useDeleteProduct, useGetProductById, useUpdateProduct } from "@/lib/react-query/products-queries-and-mutations";
 import { useListCategories } from "@/lib/react-query/categories-queries-and-mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,22 +24,23 @@ export function UpdateProductDialog(product: ProductProps) {
     const { mutateAsync: updateProduct, isPending, isSuccess } = useUpdateProduct();
     const { data: categories, isLoading: isLoadingCategories } = useListCategories();
     const { data: productCompleteData, isLoading: isLoadingProductComplete } = useGetProductById(product.id);
-    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<UpdateProductSchemaType>({
+    console.log(productCompleteData)
+    const { register, handleSubmit, formState: { errors }, setValue, reset, watch } = useForm<UpdateProductSchemaType>({
         resolver: zodResolver(UpdateProductSchema),
-        values:{
-            title:productCompleteData?.title ?? "",
-            category_id: productCompleteData?.categoryId ?? "",
+        values: {
+            title: productCompleteData?.title ?? "",
+            category_id: productCompleteData?.category?.id ?? "", // Atualizado para refletir o novo formato
             description: productCompleteData?.description ?? "",
             id: productCompleteData?.id ?? "",
             image_url: productCompleteData?.imageUrl ?? "",
             price_in_cents: productCompleteData?.priceInCents ?? 0,
-            stock: productCompleteData?.stock ?? 0
+            stock: productCompleteData?.stock ?? 0,
         }
     });
     console.log(productCompleteData)
     const { mutateAsync: deleteProduct, isPending: isPendingDeleteProduct, reset: resetDeleteProduct } = useDeleteProduct();
 
-   
+
     // Função para formatar o valor como moeda
     const formatCurrency = (valueInCents: number) => {
         return (valueInCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -59,7 +60,7 @@ export function UpdateProductDialog(product: ProductProps) {
         setPriceValue(formatCurrency(intValue));
 
         // Atualiza o valor em centavos no formulário
-        setValue("price_in_cents", intValue || 0); 
+        setValue("price_in_cents", intValue || 0);
     };
 
     // Função para lidar com a seleção de arquivo (imagem)
@@ -185,7 +186,7 @@ export function UpdateProductDialog(product: ProductProps) {
                         <div className="gap-2 flex flex-col">
                             <Label>Categoria</Label>
                             <Select
-                                value={selectedCategory} // Define o valor do Select com a categoria selecionada
+                                value={watch("category_id") || ""}
                                 onValueChange={(value) => {
                                     setValue("category_id", value);
                                     setSelectedCategory(value);
