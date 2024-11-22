@@ -7,7 +7,9 @@ import { HomeIcon, InfoIcon, LayoutDashboard, LogIn, PanelBottom, UserPlus } fro
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs"; // Hook do Clerk
+import Image from "next/image";
 
+import IconLogo from "../../assets/icon.png"
 export function HeaderPublicComponent() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
@@ -21,7 +23,7 @@ export function HeaderPublicComponent() {
     return (
         <header className="grid grid-cols-2 lg:grid-cols-3 h-24 px-6 lg:px-12 sticky top-0 z-30 bg-background">
             <div className="col-span-1 flex items-center flex-row">
-                <h1>logo</h1>
+                <Image src={IconLogo} alt="logo" className="w-20 h-20 rounded-lg"/>
             </div>
             {/* Nav bar para tamanhos acima de lg */}
             <nav className="col-span-2 lg:flex justify-end flex-row items-center hidden">
